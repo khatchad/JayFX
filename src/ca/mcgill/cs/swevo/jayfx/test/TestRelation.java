@@ -17,33 +17,29 @@ public class TestRelation extends TestCase {
 
 	private Relation[] aDirectRelations;
 	private Relation[] aIndirectRelations;
-	
-	
-	public void setUp()
-	{
+
+	@Override
+	public void setUp() {
 		aDirectRelations = Relation.getAllRelations(true);
 		aIndirectRelations = Relation.getAllRelations(false);
 	}
-	
+
 	/**
 	 * Check if there are equal number of direct and indirection relations.
 	 *
 	 */
-	public void test1()
-	{
-		assertEquals( aDirectRelations.length, aIndirectRelations.length );
+	public void test1() {
+		assertEquals(aDirectRelations.length, aIndirectRelations.length);
 	}
-	
+
 	/**
-	 * Check if the inverse of a direction relation is equal to 
-	 * its copy in the indirection relation collections.
+	 * Check if the inverse of a direction relation is equal to its copy in the
+	 * indirection relation collections.
 	 *
 	 */
-	public void test2()
-	{
-		for( int i = 0; i<aDirectRelations.length; i++ )
-		{
-			assertEquals( aDirectRelations[i].getInverseRelation(), aIndirectRelations[i] );
+	public void test2() {
+		for (int i = 0; i < aDirectRelations.length; i++) {
+			assertEquals(aDirectRelations[i].getInverseRelation(), aIndirectRelations[i]);
 		}
 	}
 }

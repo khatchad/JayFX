@@ -16,26 +16,24 @@ import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Bundle;
 
 /**
- * A general facade for common behavior related to dealing
- * with exceptions in JayFX.
+ * A general facade for common behavior related to dealing with exceptions in
+ * JayFX.
  */
-class ProblemManager
-{
-	private ProblemManager() 
-	{
-		
+class ProblemManager {
+	private ProblemManager() {
+
 	}
-	
+
 	/**
 	 * Silently reports an exception by logging it.
-	 * @param pException The exception to report.
+	 * 
+	 * @param pException
+	 *            The exception to report.
 	 */
-	public static void reportException( Exception pException )
-	{
+	public static void reportException(Exception pException) {
 		Bundle lJayFX = Platform.getBundle("ca.mcgill.cs.swevo.jayfx");
-		assert( lJayFX != null );
-		Platform.getLog( lJayFX ).log( new Status( IStatus.ERROR, "ca.mcgill.cs.swevo.jayfx", IStatus.OK, 
-			pException.getClass().getName(), pException ));
+		assert(lJayFX != null);
+		Platform.getLog(lJayFX).log(new Status(IStatus.ERROR, "ca.mcgill.cs.swevo.jayfx", IStatus.OK,
+				pException.getClass().getName(), pException));
 	}
 }
-

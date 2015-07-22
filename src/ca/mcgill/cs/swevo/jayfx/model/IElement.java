@@ -10,36 +10,33 @@
 
 package ca.mcgill.cs.swevo.jayfx.model;
 
-/** 
+/**
  * A program element in the Java model.
  */
-public interface IElement
-{
+public interface IElement {
 	/**
 	 * @return The category for this element.
 	 */
 	public ICategories getCategory();
-	
+
 	/**
 	 * @return The ID for this element.
 	 */
 	public String getId();
-	
+
 	/**
-	 * @return The declaring class of the element.
-	 * Null if the element is a top-level class (i.e., not
-	 * an inner class.
+	 * @return The declaring class of the element. Null if the element is a
+	 *         top-level class (i.e., not an inner class.
 	 */
 	public ClassElement getDeclaringClass();
-	
-	/** 
+
+	/**
 	 * @return The id of this element without the package.
 	 */
 	public String getShortName();
-	
+
 	/**
 	 * @return String Name of the package this element belongs to.
 	 */
 	public String getPackageName();
 }
-

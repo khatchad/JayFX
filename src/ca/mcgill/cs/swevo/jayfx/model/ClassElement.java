@@ -9,79 +9,83 @@
  */
 
 package ca.mcgill.cs.swevo.jayfx.model;
+
 /**
  * Represents a class program element.
  */
-public class ClassElement extends AbstractElement
-{
-	/** Initialize a class element with its fully qualified name 
-	 * Class elements should only be created by a FlyweightElementFactory.
-	 * @param pId The fully qualified name of the class.
+public class ClassElement extends AbstractElement {
+	/**
+	 * Initialize a class element with its fully qualified name Class elements
+	 * should only be created by a FlyweightElementFactory.
+	 * 
+	 * @param pId
+	 *            The fully qualified name of the class.
 	 */
-	protected ClassElement(String pId)
-	{
-		super( pId );
+	protected ClassElement(String pId) {
+		super(pId);
 	}
-	
-	/** Returns the category of this element, which always a class.
+
+	/**
+	 * Returns the category of this element, which always a class.
+	 * 
 	 * @return the keyword "class".
 	 */
-	public ICategories getCategory()
-	{
+	@Override
+	public ICategories getCategory() {
 		return ICategories.CLASS;
 	}
-	
+
 	/**
-	 * @param pObject The object to compare the class to.
+	 * @param pObject
+	 *            The object to compare the class to.
 	 * @return Whether pObject has the same ID as this element.
 	 */
-	public boolean equals( Object pObject )
-	{
-		if( !(pObject instanceof ClassElement))
+	@Override
+	public boolean equals(Object pObject) {
+		if (!(pObject instanceof ClassElement))
 			return false;
 		else
-			return getId().equals(((ClassElement)pObject).getId() );
+			return getId().equals(((ClassElement) pObject).getId());
 	}
-	
-	/** 
+
+	/**
 	 * @return A hash code for this element.
 	 */
-	public int hashCode()
-	{
+	@Override
+	public int hashCode() {
 		return getId().hashCode();
 	}
-	
-	/** 
-	 * @return The declaring class of this class.  null is the
-	 * element is a top-level class.
+
+	/**
+	 * @return The declaring class of this class. null is the element is a
+	 *         top-level class.
 	 */
-	public ClassElement getDeclaringClass()
-	{
+	@Override
+	public ClassElement getDeclaringClass() {
 		return null;
 	}
-	
-	/** 
+
+	/**
 	 * @return The name of the package in which this class is defined.
 	 */
-	public String getPackageName()
-	{
-		int lIndex = getId().lastIndexOf( "." );
-		if( lIndex >= 0 )
+	@Override
+	public String getPackageName() {
+		int lIndex = getId().lastIndexOf(".");
+		if (lIndex >= 0)
 			return getId().substring(0, getId().lastIndexOf("."));
 		else
 			return "";
 	}
-	
+
 	/**
 	 * @return The name of the class without the package prefix.
 	 */
-	public String getShortName()
-	{
+	@Override
+	public String getShortName() {
 		String lPackageName = getPackageName();
-		if( lPackageName.length() > 0 )
-			return getId().substring( lPackageName.length() +1, getId().length() );
+		if (lPackageName.length() > 0)
+			return getId().substring(lPackageName.length() + 1, getId().length());
 		else
 			return getId();
 	}
 }
-

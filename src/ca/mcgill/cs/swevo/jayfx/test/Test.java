@@ -33,91 +33,94 @@ import ca.mcgill.cs.swevo.jayfx.model.Relation;
 /**
  * @author martin
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ *         TODO To change the template for this generated type comment go to
+ *         Window - Preferences - Java - Code Style - Code Templates
  */
 public class Test implements IWorkbenchWindowActionDelegate {
 
-    private IStructuredSelection aSelection;
-    
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
-     */
-    public void dispose() {
-        // TODO Auto-generated method stub
+	private IStructuredSelection aSelection;
 
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
+	 */
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
-     */
-    public void init(IWorkbenchWindow lWindow) {
-        // TODO Auto-generated method stub
+	}
 
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.
+	 * IWorkbenchWindow)
+	 */
+	@Override
+	public void init(IWorkbenchWindow lWindow) {
+		// TODO Auto-generated method stub
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-     */
-    public void run(IAction action)
-    {
-    	try
-		{
-    		JayFX lDB = new JayFX();
-    		IProgressMonitor lMonitor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getViewReferences()[0].getView( true ).getViewSite().getActionBars().getStatusLineManager().getProgressMonitor();
-    		lDB.initialize( getSelectedProject(), lMonitor, true );
-    		//lDB.dumpConverter();
-    		//System.out.println("--- Calls ---");
-    		Set lAllElements = lDB.getAllElements();
-    		IElement[] lElements = (IElement[]) lAllElements.toArray( new IElement[lAllElements.size()]);
-    		
-    		for( int i = 0; i < lElements.length; i++ )
-    		{
-    			Set lTargets = lDB.getRange( lElements[i], Relation.T_CALLS );
-    			if( lTargets.size() > 0 )
-    			{
-    				System.out.println( lElements[i] );
-    				for( Iterator j = lTargets.iterator(); j.hasNext(); )
-    				{
-    					System.out.println("    " + j.next() );
-    				}
-    			}
-    		}
-    		
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+	 */
+	@Override
+	public void run(IAction action) {
+		try {
+			JayFX lDB = new JayFX();
+			IProgressMonitor lMonitor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+					.getViewReferences()[0].getView(true).getViewSite().getActionBars().getStatusLineManager()
+							.getProgressMonitor();
+			lDB.initialize(getSelectedProject(), lMonitor, true);
+			// lDB.dumpConverter();
+			// System.out.println("--- Calls ---");
+			Set lAllElements = lDB.getAllElements();
+			IElement[] lElements = (IElement[]) lAllElements.toArray(new IElement[lAllElements.size()]);
+
+			for (int i = 0; i < lElements.length; i++) {
+				Set lTargets = lDB.getRange(lElements[i], Relation.T_CALLS);
+				if (lTargets.size() > 0) {
+					System.out.println(lElements[i]);
+					for (Iterator j = lTargets.iterator(); j.hasNext();) {
+						System.out.println("    " + j.next());
+					}
+				}
+			}
+
+		} catch (JayFXException lException) {
+			lException.printStackTrace();
+		} catch (AssertionError lError) {
+			lError.printStackTrace();
 		}
-    	catch( JayFXException lException )
-		{
-    		lException.printStackTrace();
-		}
-    	catch( AssertionError lError )
-		{
-    		lError.printStackTrace();
-		}
-    }
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
-     */
-    public void selectionChanged(IAction action, ISelection selection) {
-        if( selection instanceof IStructuredSelection )
-            aSelection = (IStructuredSelection)selection;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.
+	 * IAction, org.eclipse.jface.viewers.ISelection)
+	 */
+	@Override
+	public void selectionChanged(IAction action, ISelection selection) {
+		if (selection instanceof IStructuredSelection)
+			aSelection = (IStructuredSelection) selection;
 
-    }
-    
-    private IProject getSelectedProject()
-	{
+	}
+
+	private IProject getSelectedProject() {
 		IProject lReturn = null;
 		Iterator i = aSelection.iterator();
-		if( i.hasNext() )
-		{
+		if (i.hasNext()) {
 			Object lNext = i.next();
-			if( lNext instanceof IResource )
-			{
-				lReturn = ((IResource)lNext).getProject();
-			}
-			else if( lNext instanceof IJavaElement )
-			{
-				IJavaProject lProject = ((IJavaElement)lNext).getJavaProject();
+			if (lNext instanceof IResource) {
+				lReturn = ((IResource) lNext).getProject();
+			} else if (lNext instanceof IJavaElement) {
+				IJavaProject lProject = ((IJavaElement) lNext).getJavaProject();
 				lReturn = lProject.getProject();
 			}
 		}

@@ -15,144 +15,133 @@ import java.util.StringTokenizer;
 /**
  * Represents a method element in the model.
  */
-public class MethodElement extends AbstractElement
-{
-	/** Creates a method objects.  Such objects should not 
-	 * be created directly but should be obtained through a
-	 * FlyweightElementFactory.
-	 * @param pId The unique descriptor of this method.  Comprises
-	 * the fully qualified name of the declaring class, followed by
-	 * the name of the method (or init for constructors), and the parameter
-	 * list.
+public class MethodElement extends AbstractElement {
+	/**
+	 * Creates a method objects. Such objects should not be created directly but
+	 * should be obtained through a FlyweightElementFactory.
+	 * 
+	 * @param pId
+	 *            The unique descriptor of this method. Comprises the fully
+	 *            qualified name of the declaring class, followed by the name of
+	 *            the method (or init for constructors), and the parameter list.
 	 */
-	protected MethodElement( String pId )
-	{
-		super( pId );
+	protected MethodElement(String pId) {
+		super(pId);
 	}
-	
-	/** 
+
+	/**
 	 * Returns the category of this element type, i.e., a method.
+	 * 
 	 * @return ICategories.METHOD
 	 */
-	public ICategories getCategory()
-	{
+	@Override
+	public ICategories getCategory() {
 		return ICategories.METHOD;
 	}
-	
+
 	/**
-	 * Equality for method elements is based on the equality
-	 * of their corresponding ids.
-	 * @param pObject the object to compare
-	 * to.
-	 * @return true if this object has the same 
-	 * id as pObject.
+	 * Equality for method elements is based on the equality of their
+	 * corresponding ids.
+	 * 
+	 * @param pObject
+	 *            the object to compare to.
+	 * @return true if this object has the same id as pObject.
 	 * @see java.lang.Object#equals(Object)
 	 */
-	public boolean equals( Object pObject )
-	{
-		if( !(pObject instanceof MethodElement))
+	@Override
+	public boolean equals(Object pObject) {
+		if (!(pObject instanceof MethodElement))
 			return false;
 		else
-			return getId().equals(((MethodElement)pObject).getId() );
+			return getId().equals(((MethodElement) pObject).getId());
 	}
-	
-	/** 
+
+	/**
 	 * The hashcode is determined based on the id of the method.
+	 * 
 	 * @return The hashcode of the id String for this method.
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode()
-	{
+	@Override
+	public int hashCode() {
 		return getId().hashCode();
 	}
-	
+
 	/**
 	 * @return The name of the class declaring this method.
 	 */
-	public ClassElement getDeclaringClass()
-	{
+	@Override
+	public ClassElement getDeclaringClass() {
 		String lName = getFirstParticle();
-		int lIndex = lName.lastIndexOf( "." );
+		int lIndex = lName.lastIndexOf(".");
 		ClassElement lReturn = null;
-		lReturn =  (ClassElement)FlyweightElementFactory.getElement( ICategories.CLASS, lName.substring(0, lIndex));
+		lReturn = (ClassElement) FlyweightElementFactory.getElement(ICategories.CLASS, lName.substring(0, lIndex));
 		return lReturn;
 	}
-	
+
 	/**
 	 * @return The simple name of the method.
 	 */
-	public String getName()
-	{
+	public String getName() {
 		String lName = getFirstParticle();
-		int lIndex = lName.lastIndexOf( "." );
+		int lIndex = lName.lastIndexOf(".");
 		return lName.substring(lIndex + 1, lName.length());
 	}
-	
+
 	/**
-	 * @return The String of parameter types for this method, 
-	 * including the parentheses.
+	 * @return The String of parameter types for this method, including the
+	 *         parentheses.
 	 */
-	public String getParameters()
-	{
+	public String getParameters() {
 		int lIndex = getId().indexOf("(");
 		return getId().substring(lIndex, getId().length());
 	}
-	
+
 	/**
 	 * @return Fully qualified name of the method.
 	 */
-	private String getFirstParticle()
-	{
+	private String getFirstParticle() {
 		int lIndex = getId().indexOf("(");
 		return getId().substring(0, lIndex);
 	}
-	
-	/** 
+
+	/**
 	 * @return The name of the package in which the declaring class of this
-	 * method is defined in.
+	 *         method is defined in.
 	 */
-	public String getPackageName()
-	{
+	@Override
+	public String getPackageName() {
 		return getDeclaringClass().getPackageName();
 	}
-	
-	/** 
-	 * @return The id of this element without the package names for the 
-	 * name of the method and the parameter types.
+
+	/**
+	 * @return The id of this element without the package names for the name of
+	 *         the method and the parameter types.
 	 */
-	public String getShortName()
-	{
+	@Override
+	public String getShortName() {
 		String lReturn = getDeclaringClass().getShortName() + "." + getName() + "(";
-		StringTokenizer lParser = new StringTokenizer( getParameters(), ",()" );
+		StringTokenizer lParser = new StringTokenizer(getParameters(), ",()");
 		int lNbTokens = lParser.countTokens();
-		for( int i = 0 ; i < lNbTokens -1 ; i++ )
-		{
+		for (int i = 0; i < lNbTokens - 1; i++) {
 			String lToken = lParser.nextToken();
-			int lIndex = lToken.lastIndexOf( '.' );
-			if( lIndex >= 0 )
-			{
-				lReturn += lToken.substring( lIndex + 1, lToken.length() ) + ",";
-			}
-			else
-			{
+			int lIndex = lToken.lastIndexOf('.');
+			if (lIndex >= 0) {
+				lReturn += lToken.substring(lIndex + 1, lToken.length()) + ",";
+			} else {
 				lReturn += lToken + ",";
 			}
 		}
-		
-		if( lNbTokens > 0 )
-		{
+
+		if (lNbTokens > 0) {
 			String lToken = lParser.nextToken();
-			int lIndex = lToken.lastIndexOf( '.' );
-			if( lIndex >= 0 )
-			{
-				lReturn += lToken.substring( lIndex + 1, lToken.length());
-			}
-			else
-			{
+			int lIndex = lToken.lastIndexOf('.');
+			if (lIndex >= 0) {
+				lReturn += lToken.substring(lIndex + 1, lToken.length());
+			} else {
 				lReturn += lToken;
 			}
 		}
 		return lReturn + ")";
 	}
 }
-
