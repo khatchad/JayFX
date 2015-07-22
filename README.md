@@ -42,8 +42,8 @@ The [JayFX Benchmark](http://cs.mcgill.ca/~swevo/jayfx/JayFXBenchmark.zip) proje
 
 ## People
 
-[Martin Robillard](http://www.cs.mcgill.ca/~martin) (Project Manager)
-[Isaac Yuen](http://www.cs.mcgill.ca/~iyuen) (Technical Lead)
+- [Martin Robillard](http://www.cs.mcgill.ca/~martin) (Project Manager)
+- [Isaac Yuen](http://www.cs.mcgill.ca/~iyuen) (Technical Lead)
 
 ## Contact Information
 
