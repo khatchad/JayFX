@@ -10,19 +10,25 @@
 
 package ca.mcgill.cs.swevo.jayfx.model;
 
+import java.io.Serializable;
+
+import org.jdom2.Element;
+
 /**
  * A program element in the Java model.
  */
-public interface IElement {
+public interface IElement extends Serializable {
+	/**
+	 * 
+	 */
+	static final String ID = "id";
+
+	public Element getXML();
+
 	/**
 	 * @return The category for this element.
 	 */
-	public ICategories getCategory();
-
-	/**
-	 * @return The ID for this element.
-	 */
-	public String getId();
+	public Category getCategory();
 
 	/**
 	 * @return The declaring class of the element. Null if the element is a
@@ -31,12 +37,17 @@ public interface IElement {
 	public ClassElement getDeclaringClass();
 
 	/**
-	 * @return The id of this element without the package.
+	 * @return The ID for this element.
 	 */
-	public String getShortName();
+	public String getId();
 
 	/**
 	 * @return String Name of the package this element belongs to.
 	 */
 	public String getPackageName();
+
+	/**
+	 * @return The id of this element without the package.
+	 */
+	public String getShortName();
 }

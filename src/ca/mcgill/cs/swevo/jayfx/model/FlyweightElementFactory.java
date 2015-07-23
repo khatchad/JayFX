@@ -12,6 +12,8 @@ package ca.mcgill.cs.swevo.jayfx.model;
 
 import java.util.Hashtable;
 
+import org.jdom2.Element;
+
 /**
  * Factory participant in the Flyweight design pattern. Produces unique IElement
  * objects representing the various elements in a Java program.
@@ -30,11 +32,10 @@ public class FlyweightElementFactory {
 	 * Returns a flyweight object representing a program element.
 	 * 
 	 * @param pCategory
-	 *            The category of element. Must be a value declared in
-	 *            ICategories.
+	 *            The category of element. Must be a value declared in Category.
 	 * @param pId
 	 *            The id for the element. For example, a field Id for
-	 *            ICategories.FIELD.
+	 *            Category.FIELD.
 	 * @see <a href=
 	 *      "http://java.sun.com/docs/books/jls/third_edition/html/binaryComp.html#13.1">
 	 *      Java Specification, Third Section, 13.1 Section for the binary name
@@ -43,20 +44,34 @@ public class FlyweightElementFactory {
 	 * @exception InternalProblemException
 	 *                if an invalid category is passed as parameter.
 	 */
-	public static IElement getElement(ICategories pCategory, String pId) {
-		IElement lReturn = aElements.get(pCategory + KEY_SEPARATOR + pId);
+	public static IElement getElement(final Category pCategory, final String pId) {
+		IElement lReturn = FlyweightElementFactory.aElements
+				.get(pCategory + FlyweightElementFactory.KEY_SEPARATOR + pId);
 		if (lReturn == null) {
-			if (pCategory == ICategories.CLASS) {
+			if (pCategory == Category.CLASS)
 				lReturn = new ClassElement(pId);
-			} else if (pCategory == ICategories.FIELD) {
+			else if (pCategory == Category.FIELD)
 				lReturn = new FieldElement(pId);
-			} else if (pCategory == ICategories.METHOD) {
+			else if (pCategory == Category.METHOD)
 				lReturn = new MethodElement(pId);
-			} else {
+			else if (pCategory == Category.PACKAGE)
+				lReturn = new PackageElement(pId);
+			else
 				throw new InternalProblemException("Invalid element category: " + pCategory);
-			}
-			aElements.put(pCategory + KEY_SEPARATOR + pId, lReturn);
+			FlyweightElementFactory.aElements.put(pCategory + FlyweightElementFactory.KEY_SEPARATOR + pId, lReturn);
 		}
 		return lReturn;
+	}
+
+	/**
+	 * @param elementXML
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <E> E getElement(Element elementXML) {
+		// extract the category and the ID and delegate the behavior.
+		String identifierString = elementXML.getAttribute(IElement.ID).getValue();
+		Category category = Category.valueOf(elementXML.getChild(Category.class.getSimpleName()));
+		return (E) getElement(category, identifierString);
 	}
 }

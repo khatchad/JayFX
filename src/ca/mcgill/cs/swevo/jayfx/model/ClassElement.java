@@ -14,6 +14,9 @@ package ca.mcgill.cs.swevo.jayfx.model;
  * Represents a class program element.
  */
 public class ClassElement extends AbstractElement {
+
+	private static final long serialVersionUID = 8565762363075921025L;
+
 	/**
 	 * Initialize a class element with its fully qualified name Class elements
 	 * should only be created by a FlyweightElementFactory.
@@ -21,18 +24,8 @@ public class ClassElement extends AbstractElement {
 	 * @param pId
 	 *            The fully qualified name of the class.
 	 */
-	protected ClassElement(String pId) {
+	protected ClassElement(final String pId) {
 		super(pId);
-	}
-
-	/**
-	 * Returns the category of this element, which always a class.
-	 * 
-	 * @return the keyword "class".
-	 */
-	@Override
-	public ICategories getCategory() {
-		return ICategories.CLASS;
 	}
 
 	/**
@@ -41,19 +34,21 @@ public class ClassElement extends AbstractElement {
 	 * @return Whether pObject has the same ID as this element.
 	 */
 	@Override
-	public boolean equals(Object pObject) {
+	public boolean equals(final Object pObject) {
 		if (!(pObject instanceof ClassElement))
 			return false;
 		else
-			return getId().equals(((ClassElement) pObject).getId());
+			return this.getId().equals(((ClassElement) pObject).getId());
 	}
 
 	/**
-	 * @return A hash code for this element.
+	 * Returns the category of this element, which always a class.
+	 * 
+	 * @return the keyword "class".
 	 */
 	@Override
-	public int hashCode() {
-		return getId().hashCode();
+	public Category getCategory() {
+		return Category.CLASS;
 	}
 
 	/**
@@ -70,9 +65,9 @@ public class ClassElement extends AbstractElement {
 	 */
 	@Override
 	public String getPackageName() {
-		int lIndex = getId().lastIndexOf(".");
+		final int lIndex = this.getId().lastIndexOf(".");
 		if (lIndex >= 0)
-			return getId().substring(0, getId().lastIndexOf("."));
+			return this.getId().substring(0, this.getId().lastIndexOf("."));
 		else
 			return "";
 	}
@@ -82,10 +77,20 @@ public class ClassElement extends AbstractElement {
 	 */
 	@Override
 	public String getShortName() {
-		String lPackageName = getPackageName();
+		final String lPackageName = this.getPackageName();
 		if (lPackageName.length() > 0)
-			return getId().substring(lPackageName.length() + 1, getId().length());
+			return this.getId().substring(lPackageName.length() + 1, this.getId().length());
 		else
-			return getId();
+			return this.getId();
+	}
+
+	/**
+	 * @return A hash code for this element.
+	 */
+	@Override
+	public int hashCode() {
+		if (this.getId() == null)
+			this.setId("java.lang.Object");
+		return this.getId().hashCode();
 	}
 }

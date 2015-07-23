@@ -18,6 +18,11 @@ public class ElementNotFoundException extends RuntimeException {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = -3846765061551720103L;
+
+	/**
+	 * 
+	 */
 	public ElementNotFoundException() {
 		super();
 	}
@@ -25,7 +30,7 @@ public class ElementNotFoundException extends RuntimeException {
 	/**
 	 * @param arg0
 	 */
-	public ElementNotFoundException(String arg0) {
+	public ElementNotFoundException(final String arg0) {
 		super(arg0);
 
 	}
@@ -34,7 +39,7 @@ public class ElementNotFoundException extends RuntimeException {
 	 * @param arg0
 	 * @param arg1
 	 */
-	public ElementNotFoundException(String arg0, Throwable arg1) {
+	public ElementNotFoundException(final String arg0, final Throwable arg1) {
 		super(arg0, arg1);
 
 	}
@@ -42,7 +47,7 @@ public class ElementNotFoundException extends RuntimeException {
 	/**
 	 * @param arg0
 	 */
-	public ElementNotFoundException(Throwable arg0) {
+	public ElementNotFoundException(final Throwable arg0) {
 		super(arg0);
 
 	}

@@ -16,21 +16,18 @@ public class JayFXException extends Exception {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = -3835440373464293435L;
+
+	/**
+	 * 
+	 */
 	public JayFXException() {
 	}
 
 	/**
 	 * @param arg0
 	 */
-	public JayFXException(String arg0) {
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param arg0
-	 */
-	public JayFXException(Throwable arg0) {
+	public JayFXException(final String arg0) {
 		super(arg0);
 		// TODO Auto-generated constructor stub
 	}
@@ -39,8 +36,16 @@ public class JayFXException extends Exception {
 	 * @param arg0
 	 * @param arg1
 	 */
-	public JayFXException(String arg0, Throwable arg1) {
+	public JayFXException(final String arg0, final Throwable arg1) {
 		super(arg0, arg1);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param arg0
+	 */
+	public JayFXException(final Throwable arg0) {
+		super(arg0);
 		// TODO Auto-generated constructor stub
 	}
 

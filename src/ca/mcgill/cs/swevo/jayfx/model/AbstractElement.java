@@ -10,11 +10,13 @@
 
 package ca.mcgill.cs.swevo.jayfx.model;
 
+import org.jdom2.*;
+
 /**
  * Abtract class for the various program elements in the model.
  */
 public abstract class AbstractElement implements IElement {
-	private String aId;
+	private String aId = "java.lang.Object";
 
 	/**
 	 * Builds an abstract element.
@@ -26,8 +28,9 @@ public abstract class AbstractElement implements IElement {
 	 *            for fields, and the name and signature appended to the
 	 *            fully-qualified name of the declaring class for methods.
 	 */
-	protected AbstractElement(String pId) {
-		aId = pId;
+	protected AbstractElement(final String pId) {
+		if (pId != null)
+			this.aId = pId;
 	}
 
 	/**
@@ -38,7 +41,7 @@ public abstract class AbstractElement implements IElement {
 	 * @see ca.ubc.cs.javadb.model.IElement#getCategory()
 	 */
 	@Override
-	public abstract ICategories getCategory();
+	public abstract Category getCategory();
 
 	/**
 	 * This method must be redeclared here for compatibility with the IElement
@@ -49,8 +52,18 @@ public abstract class AbstractElement implements IElement {
 	 */
 	@Override
 	public String getId() {
-		return aId;
+		return this.aId;
 	}
+
+	public void setId(String val) {
+		this.aId = val;
+	}
+
+	/**
+	 * @return The id of this element without the package.
+	 */
+	@Override
+	public abstract String getShortName();
 
 	/**
 	 * Returns a String representation of the element.
@@ -59,12 +72,14 @@ public abstract class AbstractElement implements IElement {
 	 */
 	@Override
 	public String toString() {
-		return getId();
+		return this.getId();
 	}
 
-	/**
-	 * @return The id of this element without the package.
-	 */
 	@Override
-	public abstract String getShortName();
+	public Element getXML() {
+		Element ret = new Element(IElement.class.getSimpleName());
+		ret.setAttribute(new Attribute(IElement.ID, this.getId()));
+		ret.addContent(this.getCategory().getXML());
+		return ret;
+	}
 }

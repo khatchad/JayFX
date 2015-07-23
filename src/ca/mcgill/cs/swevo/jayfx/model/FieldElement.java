@@ -14,6 +14,9 @@ package ca.mcgill.cs.swevo.jayfx.model;
  * Represents a field element in the Java program model.
  */
 public class FieldElement extends AbstractElement {
+
+	private static final long serialVersionUID = -7741801515115590408L;
+
 	/**
 	 * Creates a field element. This constructor should not be used directly.
 	 * FieldElements should be obtained through the
@@ -24,18 +27,8 @@ public class FieldElement extends AbstractElement {
 	 *            of the declaring class followed by the name of the field, in
 	 *            dot notation.
 	 */
-	protected FieldElement(String pId) {
+	protected FieldElement(final String pId) {
 		super(pId);
-	}
-
-	/**
-	 * Returns the category of this element, i.e., a field.
-	 * 
-	 * @return ICategories.FIELD.
-	 */
-	@Override
-	public ICategories getCategory() {
-		return ICategories.FIELD;
 	}
 
 	/**
@@ -47,19 +40,21 @@ public class FieldElement extends AbstractElement {
 	 *         element.
 	 */
 	@Override
-	public boolean equals(Object pObject) {
+	public boolean equals(final Object pObject) {
 		if (!(pObject instanceof FieldElement))
 			return false;
 		else
-			return getId().equals(((FieldElement) pObject).getId());
+			return this.getId().equals(((FieldElement) pObject).getId());
 	}
 
 	/**
-	 * @return a hash code for this object.
+	 * Returns the category of this element, i.e., a field.
+	 * 
+	 * @return Category.FIELD.
 	 */
 	@Override
-	public int hashCode() {
-		return getId().hashCode();
+	public Category getCategory() {
+		return Category.FIELD;
 	}
 
 	/**
@@ -68,8 +63,8 @@ public class FieldElement extends AbstractElement {
 	@Override
 	public ClassElement getDeclaringClass() {
 		ClassElement lReturn = null;
-		lReturn = (ClassElement) FlyweightElementFactory.getElement(ICategories.CLASS,
-				getId().substring(0, getId().lastIndexOf(".")));
+		lReturn = (ClassElement) FlyweightElementFactory.getElement(Category.CLASS,
+				this.getId().substring(0, this.getId().lastIndexOf(".")));
 		return lReturn;
 	}
 
@@ -79,19 +74,26 @@ public class FieldElement extends AbstractElement {
 	 */
 	@Override
 	public String getPackageName() {
-		return getDeclaringClass().getPackageName();
+		return this.getDeclaringClass().getPackageName();
+	}
+
+	@Override
+	public String getShortName() {
+		return this.getDeclaringClass().getShortName() + "." + this.getSimpleName();
 	}
 
 	/**
 	 * @return The simple name of the field.
 	 */
 	public String getSimpleName() {
-		return getId().substring(getId().lastIndexOf(".") + 1, getId().length());
+		return this.getId().substring(this.getId().lastIndexOf(".") + 1, this.getId().length());
 	}
 
+	/**
+	 * @return a hash code for this object.
+	 */
 	@Override
-	public String getShortName() {
-		return getDeclaringClass().getShortName() + "." + getSimpleName();
+	public int hashCode() {
+		return this.getId().hashCode();
 	}
-
 }

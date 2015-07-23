@@ -19,13 +19,13 @@ import java.util.Iterator;
  * used.
  */
 public class ElementSet {
-	private HashSet<IElement> aElements;
+	private final HashSet<IElement> aElements;
 
 	/**
 	 * Default constructor. Creates an empty set.
 	 */
 	public ElementSet() {
-		aElements = new HashSet<IElement>();
+		this.aElements = new HashSet<IElement>();
 	}
 
 	/**
@@ -34,15 +34,8 @@ public class ElementSet {
 	 * @param pElement
 	 *            The element to add to this set.
 	 */
-	public void add(IElement pElement) {
-		aElements.add(pElement);
-	}
-
-	/**
-	 * @return The number of elements in the set.
-	 */
-	public int size() {
-		return aElements.size();
+	public void add(final IElement pElement) {
+		this.aElements.add(pElement);
 	}
 
 	/**
@@ -52,8 +45,8 @@ public class ElementSet {
 	 *            a set of elements to add to this set. All the elements in pSet
 	 *            should be of type IElement.
 	 */
-	public void addAll(ElementSet pSet) {
-		aElements.addAll(pSet.aElements);
+	public void addAll(final ElementSet pSet) {
+		this.aElements.addAll(pSet.aElements);
 	}
 
 	/**
@@ -64,15 +57,15 @@ public class ElementSet {
 	 *            the element to search in this set.
 	 * @return true if pElement is contained in this set.
 	 */
-	public boolean contains(IElement pElement) {
-		return aElements.contains(pElement);
+	public boolean contains(final IElement pElement) {
+		return this.aElements.contains(pElement);
 	}
 
 	/**
 	 * @return An iterator to all the elements in this set.
 	 */
-	public Iterator getAllElements() {
-		return aElements.iterator();
+	public Iterator<IElement> getAllElements() {
+		return this.aElements.iterator();
 	}
 
 	/**
@@ -81,8 +74,15 @@ public class ElementSet {
 	 * @param pElement
 	 *            the element to remove from this set.
 	 */
-	public void remove(IElement pElement) {
-		aElements.remove(pElement);
+	public void remove(final IElement pElement) {
+		this.aElements.remove(pElement);
+	}
+
+	/**
+	 * @return The number of elements in the set.
+	 */
+	public int size() {
+		return this.aElements.size();
 	}
 
 	/**
@@ -91,6 +91,6 @@ public class ElementSet {
 	 * @return All the elements in the set.
 	 */
 	public Object[] toArray() {
-		return aElements.toArray();
+		return this.aElements.toArray();
 	}
 }

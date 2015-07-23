@@ -11,6 +11,7 @@
 package ca.mcgill.cs.swevo.jayfx;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,12 +22,16 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.core.search.IJavaSearchConstants;
+import org.eclipse.jdt.core.search.SearchMatch;
+import org.eclipse.jdt.core.search.SearchPattern;
 
+import ca.mcgill.cs.swevo.jayfx.model.Category;
 import ca.mcgill.cs.swevo.jayfx.model.FieldElement;
 import ca.mcgill.cs.swevo.jayfx.model.FlyweightElementFactory;
-import ca.mcgill.cs.swevo.jayfx.model.ICategories;
 import ca.mcgill.cs.swevo.jayfx.model.IElement;
 import ca.mcgill.cs.swevo.jayfx.model.MethodElement;
+import ca.mcgill.cs.swevo.jayfx.util.SearchEngineUtil;
 
 /**
  * Convert elements between different formats using a fast lookup supported by a
@@ -34,21 +39,24 @@ import ca.mcgill.cs.swevo.jayfx.model.MethodElement;
  * anonymous and local types.
  */
 public class FastConverter {
+	private static int numberOfParams(final String pSignature) {
+		if (pSignature.length() == 2)
+			return 0;
+		int lReturn = 1;
+		for (int i = 0; i < pSignature.length(); i++)
+			if (pSignature.charAt(i) == ',')
+				lReturn++;
+		return lReturn;
+	}
+
 	// Binary type names -> IType
-	private Map<String, IType> aTypeMap;
+	private final Map<String, IType> aTypeMap;
 
 	/**
 	 * Creates a new, empty converter.
 	 */
 	public FastConverter() {
-		aTypeMap = new HashMap<String, IType>();
-	}
-
-	/**
-	 * Resets the lookup information in this converter.
-	 */
-	public void reset() {
-		aTypeMap.clear();
+		this.aTypeMap = new HashMap<String, IType>();
 	}
 
 	/**
@@ -57,23 +65,94 @@ public class FastConverter {
 	 * @param pType
 	 *            The actual type in a Java project
 	 */
-	public void addMapping(IType pType) {
-		aTypeMap.put(pType.getFullyQualifiedName('$'), pType);
+	public void addMapping(final IType pType) {
+		this.aTypeMap.put(pType.getFullyQualifiedName('$'), pType);
 	}
 
 	/**
 	 * for early testing Description of FastConverter
 	 */
 	public void dump() {
-		for (String lNext : aTypeMap.keySet()) {
+		for (final String lNext : this.aTypeMap.keySet()) {
 			String lConverted = "Not found";
-			IJavaElement lElement = aTypeMap.get(lNext);
+			final IJavaElement lElement = this.aTypeMap.get(lNext);
 			if (lNext != null) {
 				lConverted = lElement.toString();
 				System.out.println(lNext);
 				System.out.println(lNext + " -> " + lConverted);
 			}
 		}
+	}
+
+	/**
+	 * Returns an IElement describing the argument Java element. Not designed to
+	 * be able to find initializer blocks or arrays.
+	 * 
+	 * @param pElement
+	 *            Never null.
+	 * @return Never null
+	 */
+	public IElement getElement(final IJavaElement pElement) throws ConversionException {
+		// assert( pElement != null );
+		IElement lReturn = null;
+
+		if (pElement instanceof IType)
+			lReturn = this.getClassElement((IType) pElement);
+		else if (pElement instanceof IField) {
+			final IElement lClass = this.getClassElement(((IField) pElement).getDeclaringType());
+			lReturn = FlyweightElementFactory.getElement(Category.FIELD,
+					lClass.getId() + "." + ((IField) pElement).getElementName());
+		} else if (pElement instanceof IMethod) {
+			final IElement lClass = this.getClassElement(((IMethod) pElement).getDeclaringType());
+			String lName = ((IMethod) pElement).getElementName();
+			try {
+				if (((IMethod) pElement).isConstructor())
+					lName = "<init>";
+			} catch (final JavaModelException pException) {
+				throw new ConversionException(pException);
+			}
+			String lSignature = "(";
+			final String[] lParams = ((IMethod) pElement).getParameterTypes();
+			for (int i = 0; i < lParams.length - 1; i++) {
+				String param = null;
+				if (Signature.getTypeSignatureKind(lParams[i]) == Signature.TYPE_VARIABLE_SIGNATURE) // its
+																										// a
+																										// type
+																										// variable,
+																										// erase
+																										// it.
+					param = "Ljava.lang.Object;";
+				else
+					param = lParams[i];
+
+				lSignature += this.resolveType(param, ((IMethod) pElement).getDeclaringType()) + ",";
+			}
+			if (lParams.length > 0) {
+				String param = lParams[lParams.length - 1];
+				if (Signature
+						.getTypeSignatureKind(Signature.getElementType(param)) == Signature.TYPE_VARIABLE_SIGNATURE) // its
+																														// a
+																														// type
+																														// variable,
+																														// erase
+																														// it.
+					param = "Ljava.lang.Object;";
+				else
+					param = lParams[lParams.length - 1];
+
+				if (param.charAt(0) == 'Q' && param.charAt(1) == 'T')
+					param = "Ljava.lang.Object;";
+				lSignature += this.resolveType(param, ((IMethod) pElement).getDeclaringType());
+			}
+			lSignature += ")";
+			lReturn = FlyweightElementFactory.getElement(Category.METHOD, lClass.getId() + "." + lName + lSignature);
+		}
+
+		if (lReturn == null) {
+			System.err.println("Error with element: " + pElement);
+			throw new IllegalStateException("In trouble.");
+		}
+		return lReturn;
 	}
 
 	/**
@@ -90,147 +169,66 @@ public class FastConverter {
 	 * @throws ConversionException
 	 *             If the element cannot be
 	 */
-	public IJavaElement getJavaElement(IElement pElement) throws ConversionException {
-		assert(pElement != null);
+	public IJavaElement getJavaElement(final IElement pElement) throws ConversionException {
+		// assert( pElement!= null );
 		IJavaElement lReturn = null;
-		if (pElement.getCategory() == ICategories.CLASS) {
-			lReturn = aTypeMap.get(pElement.getId());
-			if (lReturn == null) {
+		if (pElement.getCategory() == Category.CLASS) {
+			lReturn = this.aTypeMap.get(pElement.getId());
+			if (lReturn == null)
 				// TODO Make this smarter in the case of multiple projects
-				if (aTypeMap.size() > 0) {
+				if (this.aTypeMap.size() > 0)
 					try {
-						lReturn = ((IJavaElement) aTypeMap.values().iterator().next()).getJavaProject()
-								.findType(pElement.getId());
-					} catch (JavaModelException pException) {
+						lReturn = this.aTypeMap.values().iterator().next().getJavaProject().findType(pElement.getId());
+					} catch (final JavaModelException pException) {
 						// noting
 					}
-				}
-			}
 			if (lReturn == null)
 				throw new ConversionException("Cannot find type " + pElement);
+		} else if (pElement.getCategory() == Category.PACKAGE) {
+			String id = pElement.getId();
+			final SearchPattern pattern = SearchPattern.createPattern(id, IJavaSearchConstants.PACKAGE,
+					IJavaSearchConstants.DECLARATIONS, SearchPattern.R_EXACT_MATCH | SearchPattern.R_CASE_SENSITIVE);
+			Collection<SearchMatch> matches = SearchEngineUtil.search(pattern, null);
+			if (matches.isEmpty())
+				throw new ConversionException("Cannot find type " + pElement);
+			else
+				lReturn = (IJavaElement) matches.iterator().next().getElement();
 		} else {
-			IJavaElement lDeclaringClass = getJavaElement(pElement.getDeclaringClass());
-			if (pElement.getCategory() == ICategories.FIELD) {
+			final IJavaElement lDeclaringClass = this.getJavaElement(pElement.getDeclaringClass());
+			if (pElement.getCategory() == Category.FIELD) {
 				lReturn = ((IType) lDeclaringClass).getField(((FieldElement) pElement).getSimpleName());
 				if (lReturn == null)
 					throw new ConversionException("Cannot find field " + pElement);
-			} else if (pElement.getCategory() == ICategories.METHOD) {
+			} else if (pElement.getCategory() == Category.METHOD)
 				try {
-					IMethod[] lMethods = ((IType) lDeclaringClass).getMethods();
-					lReturn = findMethod((MethodElement) pElement, lMethods);
+					final IMethod[] lMethods = ((IType) lDeclaringClass).getMethods();
+					lReturn = this.findMethod((MethodElement) pElement, lMethods);
+
+					// if( lReturn == null &&
+					// isDefaultConstructor((MethodElement)pElement)) {
+					//
+					// }
+
 					if (lReturn == null)
 						throw new ConversionException("Cannot find method " + pElement);
-				} catch (JavaModelException pException) {
+				} catch (final JavaModelException pException) {
 					throw new ConversionException("Cannot convert method " + pElement);
 				}
-			} else {
+			else
 				throw new ConversionException("Unsupported element type " + pElement.getClass().getName());
-			}
 		}
-		assert(lReturn != null);
+		// assert( lReturn != null );
 		return lReturn;
 	}
 
 	/**
-	 * Optimization to find an IMethod without having to resolve the parameters.
-	 * 
-	 * @return the IMethod corresponding to a candidate. Null if none are found.
+	 * Resets the lookup information in this converter.
 	 */
-	private IJavaElement findMethod(MethodElement pMethod, IMethod[] pCandidates) {
-		IJavaElement lReturn = null;
-
-		List<IMethod> lSimilar = new ArrayList<IMethod>();
-		for (int i = 0; i < pCandidates.length; i++) {
-			String lName = pCandidates[i].getElementName();
-			try {
-				if (pCandidates[i].isConstructor()) {
-					lName = "<init>";
-				}
-			} catch (JavaModelException pException) {
-				return null;
-			}
-			if (lName.equals(pMethod.getName())) {
-				if (pCandidates[i].getNumberOfParameters() == numberOfParams(pMethod.getParameters())) {
-					lSimilar.add(pCandidates[i]);
-				}
-			}
-		}
-		if (lSimilar.size() == 1) {
-			lReturn = lSimilar.get(0);
-		} else {
-			for (int i = 0; i < lSimilar.size(); i++) {
-				try {
-					if (getElement(lSimilar.get(i)) == pMethod)
-						lReturn = lSimilar.get(i);
-				} catch (ConversionException pException) {
-					// nothing, the method will return null
-				}
-			}
-		}
-
-		return lReturn;
+	public void reset() {
+		this.aTypeMap.clear();
 	}
 
-	private static int numberOfParams(String pSignature) {
-		if (pSignature.length() == 2)
-			return 0;
-		int lReturn = 1;
-		for (int i = 0; i < pSignature.length(); i++) {
-			if (pSignature.charAt(i) == ',')
-				lReturn++;
-		}
-		return lReturn;
-	}
-
-	/**
-	 * Returns an IElement describing the argument Java element. Not designed to
-	 * be able to find initializer blocks or arrays.
-	 * 
-	 * @param pElement
-	 *            Never null.
-	 * @return Never null
-	 */
-	public IElement getElement(IJavaElement pElement) throws ConversionException {
-		assert(pElement != null);
-		IElement lReturn = null;
-
-		if (pElement instanceof IType) {
-			lReturn = getClassElement((IType) pElement);
-		} else if (pElement instanceof IField) {
-			IElement lClass = getClassElement(((IField) pElement).getDeclaringType());
-			lReturn = FlyweightElementFactory.getElement(ICategories.FIELD,
-					lClass.getId() + "." + ((IField) pElement).getElementName());
-		} else if (pElement instanceof IMethod) {
-			IElement lClass = getClassElement(((IMethod) pElement).getDeclaringType());
-			String lName = ((IMethod) pElement).getElementName();
-			try {
-				if (((IMethod) pElement).isConstructor()) {
-					lName = "<init>";
-				}
-			} catch (JavaModelException pException) {
-				throw new ConversionException(pException);
-			}
-			String lSignature = "(";
-			String[] lParams = ((IMethod) pElement).getParameterTypes();
-			for (int i = 0; i < lParams.length - 1; i++) {
-				lSignature += resolveType(lParams[i], ((IMethod) pElement).getDeclaringType()) + ",";
-			}
-			if (lParams.length > 0) {
-				lSignature += resolveType(lParams[lParams.length - 1], ((IMethod) pElement).getDeclaringType());
-			}
-			lSignature += ")";
-			lReturn = FlyweightElementFactory.getElement(ICategories.METHOD, lClass.getId() + "." + lName + lSignature);
-		}
-
-		assert(lReturn != null);
-		return lReturn;
-	}
-
-	private IElement getClassElement(IType pType) {
-		return FlyweightElementFactory.getElement(ICategories.CLASS, pType.getFullyQualifiedName('$'));
-	}
-
-	public String resolveType(String pType, IType pEnclosingType) throws ConversionException {
+	public String resolveType(String pType, final IType pEnclosingType) throws ConversionException {
 		String lReturn = "";
 		int lDepth = 0;
 		int lIndex = 0;
@@ -239,29 +237,76 @@ public class FastConverter {
 			lIndex++;
 		}
 
-		if ((pType.charAt(lIndex) == Signature.C_BYTE) || (pType.charAt(lIndex) == Signature.C_CHAR)
-				|| (pType.charAt(lIndex) == Signature.C_DOUBLE) || (pType.charAt(lIndex) == Signature.C_FLOAT)
-				|| (pType.charAt(lIndex) == Signature.C_INT) || (pType.charAt(lIndex) == Signature.C_LONG)
-				|| (pType.charAt(lIndex) == Signature.C_SHORT) || (pType.charAt(lIndex) == Signature.C_VOID)
-				|| (pType.charAt(lIndex) == Signature.C_BOOLEAN) || (pType.charAt(lIndex) == Signature.C_RESOLVED)) {
+		if (pType.charAt(lIndex) == Signature.C_BYTE || pType.charAt(lIndex) == Signature.C_CHAR
+				|| pType.charAt(lIndex) == Signature.C_DOUBLE || pType.charAt(lIndex) == Signature.C_FLOAT
+				|| pType.charAt(lIndex) == Signature.C_INT || pType.charAt(lIndex) == Signature.C_LONG
+				|| pType.charAt(lIndex) == Signature.C_SHORT || pType.charAt(lIndex) == Signature.C_VOID
+				|| pType.charAt(lIndex) == Signature.C_BOOLEAN || pType.charAt(lIndex) == Signature.C_RESOLVED)
 			lReturn = pType;
-		} else {
+		else
 			try {
-				int lIndex2 = pType.indexOf(Signature.C_NAME_END);
-				String lType = pType.substring(lIndex + 1, lIndex2);
-				String[][] lTypes = pEnclosingType.resolveType(lType);
+				pType = Signature.getTypeErasure(pType);
+				final int lIndex2 = pType.indexOf(Signature.C_NAME_END);
+				final String lType = pType.substring(lIndex + 1, lIndex2);
+				final String[][] lTypes = pEnclosingType.resolveType(lType);
 				if (lTypes == null)
 					throw new ConversionException("Cannot convert type " + lType + " in " + pEnclosingType);
 				if (lTypes.length != 1)
 					throw new ConversionException("Cannot convert type " + lType + " in " + pEnclosingType);
-				for (int i = 0; i < lDepth; i++) {
+				for (int i = 0; i < lDepth; i++)
 					lReturn += "[";
-				}
 				lReturn += "L" + lTypes[0][0] + "." + lTypes[0][1].replace('.', '$') + ";";
-			} catch (JavaModelException pException) {
+			} catch (final JavaModelException pException) {
 				throw new ConversionException(pException);
 			}
-		}
 		return lReturn;
+	}
+
+	/**
+	 * Optimization to find an IMethod without having to resolve the parameters.
+	 * 
+	 * @return the IMethod corresponding to a candidate. Null if none are found.
+	 */
+	private IJavaElement findMethod(final MethodElement pMethod, final IMethod[] pCandidates) {
+		IJavaElement lReturn = null;
+
+		final List<IMethod> lSimilar = new ArrayList<IMethod>();
+		for (final IMethod element : pCandidates) {
+			String lName = element.getElementName();
+			try {
+				if (element.isConstructor())
+					lName = "<init>";
+			} catch (final JavaModelException pException) {
+				return null;
+			}
+			if (lName.equals(pMethod.getName()))
+				if (element.getNumberOfParameters() == FastConverter.numberOfParams(pMethod.getParameters()))
+					lSimilar.add(element);
+		}
+		if (lSimilar.size() == 1)
+			lReturn = lSimilar.get(0);
+		else
+			for (int i = 0; i < lSimilar.size(); i++)
+				try {
+					if (this.getElement(lSimilar.get(i)) == pMethod)
+						lReturn = lSimilar.get(i);
+				} catch (final ConversionException pException) {
+					// nothing, the method will return null
+				}
+
+		return lReturn;
+	}
+
+	private IElement getClassElement(final IType pType) {
+		return FlyweightElementFactory.getElement(Category.CLASS, pType.getFullyQualifiedName('$'));
+	}
+
+	/**
+	 * @param element
+	 * @return
+	 */
+	@SuppressWarnings("unused")
+	private boolean isDefaultConstructor(final MethodElement element) {
+		return element.getName().contains("<init>") && FastConverter.numberOfParams(element.getParameters()) == 0;
 	}
 }

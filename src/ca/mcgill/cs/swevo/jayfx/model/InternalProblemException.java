@@ -11,9 +11,14 @@
 package ca.mcgill.cs.swevo.jayfx.model;
 
 /**
- *
+ * 
  */
 public class InternalProblemException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4133268658240323229L;
+
 	/**
 	 * Constructor for InternalProblemException.
 	 */
@@ -26,7 +31,7 @@ public class InternalProblemException extends RuntimeException {
 	 * 
 	 * @param arg0
 	 */
-	public InternalProblemException(String arg0) {
+	public InternalProblemException(final String arg0) {
 		super(arg0);
 	}
 
@@ -36,7 +41,7 @@ public class InternalProblemException extends RuntimeException {
 	 * @param arg0
 	 * @param arg1
 	 */
-	public InternalProblemException(String arg0, Throwable arg1) {
+	public InternalProblemException(final String arg0, final Throwable arg1) {
 		super(arg0, arg1);
 	}
 
@@ -45,7 +50,7 @@ public class InternalProblemException extends RuntimeException {
 	 * 
 	 * @param arg0
 	 */
-	public InternalProblemException(Throwable arg0) {
+	public InternalProblemException(final Throwable arg0) {
 		super(arg0);
 	}
 }

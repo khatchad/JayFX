@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 
+import ca.mcgill.cs.swevo.jayfx.model.Category;
 import ca.mcgill.cs.swevo.jayfx.model.ClassElement;
 import ca.mcgill.cs.swevo.jayfx.model.FieldElement;
 import ca.mcgill.cs.swevo.jayfx.model.FlyweightElementFactory;
@@ -61,7 +62,7 @@ class Converter {
 	public static FieldElement getFieldElement(IField pField) {
 		String lClassName = pField.getDeclaringType().getFullyQualifiedName();
 		String lName = lClassName + DOT + pField.getElementName();
-		return (FieldElement) FlyweightElementFactory.getElement(ICategories.FIELD, lName);
+		return (FieldElement) FlyweightElementFactory.getElement(Category.FIELD, lName);
 	}
 
 	/**
@@ -93,7 +94,7 @@ class Converter {
 		} catch (JavaModelException pException) {
 			throw new ConversionException(pException);
 		}
-		return (MethodElement) FlyweightElementFactory.getElement(ICategories.METHOD, lName + lSignature);
+		return (MethodElement) FlyweightElementFactory.getElement(Category.METHOD, lName + lSignature);
 	}
 
 	/**
@@ -105,7 +106,7 @@ class Converter {
 	 *         pClass.
 	 */
 	public static ClassElement getClassElement(IType pClass) {
-		return (ClassElement) FlyweightElementFactory.getElement(ICategories.CLASS, pClass.getFullyQualifiedName());
+		return (ClassElement) FlyweightElementFactory.getElement(Category.CLASS, pClass.getFullyQualifiedName());
 	}
 
 	/**

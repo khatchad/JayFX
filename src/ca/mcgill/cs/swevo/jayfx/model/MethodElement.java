@@ -16,6 +16,11 @@ import java.util.StringTokenizer;
  * Represents a method element in the model.
  */
 public class MethodElement extends AbstractElement {
+
+	private static final long serialVersionUID = -6347203303128369543L;
+	private static final String INIT_STRING = ".<init>";
+;
+
 	/**
 	 * Creates a method objects. Such objects should not be created directly but
 	 * should be obtained through a FlyweightElementFactory.
@@ -25,18 +30,8 @@ public class MethodElement extends AbstractElement {
 	 *            qualified name of the declaring class, followed by the name of
 	 *            the method (or init for constructors), and the parameter list.
 	 */
-	protected MethodElement(String pId) {
+	protected MethodElement(final String pId) {
 		super(pId);
-	}
-
-	/**
-	 * Returns the category of this element type, i.e., a method.
-	 * 
-	 * @return ICategories.METHOD
-	 */
-	@Override
-	public ICategories getCategory() {
-		return ICategories.METHOD;
 	}
 
 	/**
@@ -49,11 +44,89 @@ public class MethodElement extends AbstractElement {
 	 * @see java.lang.Object#equals(Object)
 	 */
 	@Override
-	public boolean equals(Object pObject) {
+	public boolean equals(final Object pObject) {
 		if (!(pObject instanceof MethodElement))
 			return false;
 		else
-			return getId().equals(((MethodElement) pObject).getId());
+			return this.getId().equals(((MethodElement) pObject).getId());
+	}
+
+	/**
+	 * Returns the category of this element type, i.e., a method.
+	 * 
+	 * @return Category.METHOD
+	 */
+	@Override
+	public Category getCategory() {
+		return Category.METHOD;
+	}
+
+	/**
+	 * @return The name of the class declaring this method.
+	 */
+	@Override
+	public ClassElement getDeclaringClass() {
+		final String lName = this.getFirstParticle();
+		final int lIndex = lName.lastIndexOf(".");
+		ClassElement lReturn = null;
+		lReturn = (ClassElement) FlyweightElementFactory.getElement(Category.CLASS, lName.substring(0, lIndex));
+		return lReturn;
+	}
+
+	/**
+	 * @return The simple name of the method.
+	 */
+	public String getName() {
+		final String lName = this.getFirstParticle();
+		final int lIndex = lName.lastIndexOf(".");
+		return lName.substring(lIndex + 1, lName.length());
+	}
+
+	/**
+	 * @return The name of the package in which the declaring class of this
+	 *         method is defined in.
+	 */
+	@Override
+	public String getPackageName() {
+		return this.getDeclaringClass().getPackageName();
+	}
+
+	/**
+	 * @return The String of parameter types for this method, including the
+	 *         parentheses.
+	 */
+	public String getParameters() {
+		final int lIndex = this.getId().indexOf("(");
+		return this.getId().substring(lIndex, this.getId().length());
+	}
+
+	/**
+	 * @return The id of this element without the package names for the name of
+	 *         the method and the parameter types.
+	 */
+	@Override
+	public String getShortName() {
+		String lReturn = this.getDeclaringClass().getShortName() + "." + this.getName() + "(";
+		final StringTokenizer lParser = new StringTokenizer(this.getParameters(), ",()");
+		final int lNbTokens = lParser.countTokens();
+		for (int i = 0; i < lNbTokens - 1; i++) {
+			final String lToken = lParser.nextToken();
+			final int lIndex = lToken.lastIndexOf('.');
+			if (lIndex >= 0)
+				lReturn += lToken.substring(lIndex + 1, lToken.length()) + ",";
+			else
+				lReturn += lToken + ",";
+		}
+
+		if (lNbTokens > 0) {
+			final String lToken = lParser.nextToken();
+			final int lIndex = lToken.lastIndexOf('.');
+			if (lIndex >= 0)
+				lReturn += lToken.substring(lIndex + 1, lToken.length());
+			else
+				lReturn += lToken;
+		}
+		return lReturn + ")";
 	}
 
 	/**
@@ -64,84 +137,18 @@ public class MethodElement extends AbstractElement {
 	 */
 	@Override
 	public int hashCode() {
-		return getId().hashCode();
-	}
-
-	/**
-	 * @return The name of the class declaring this method.
-	 */
-	@Override
-	public ClassElement getDeclaringClass() {
-		String lName = getFirstParticle();
-		int lIndex = lName.lastIndexOf(".");
-		ClassElement lReturn = null;
-		lReturn = (ClassElement) FlyweightElementFactory.getElement(ICategories.CLASS, lName.substring(0, lIndex));
-		return lReturn;
-	}
-
-	/**
-	 * @return The simple name of the method.
-	 */
-	public String getName() {
-		String lName = getFirstParticle();
-		int lIndex = lName.lastIndexOf(".");
-		return lName.substring(lIndex + 1, lName.length());
-	}
-
-	/**
-	 * @return The String of parameter types for this method, including the
-	 *         parentheses.
-	 */
-	public String getParameters() {
-		int lIndex = getId().indexOf("(");
-		return getId().substring(lIndex, getId().length());
+		return this.getId().hashCode();
 	}
 
 	/**
 	 * @return Fully qualified name of the method.
 	 */
 	private String getFirstParticle() {
-		int lIndex = getId().indexOf("(");
-		return getId().substring(0, lIndex);
+		final int lIndex = this.getId().indexOf("(");
+		return this.getId().substring(0, lIndex);
 	}
 
-	/**
-	 * @return The name of the package in which the declaring class of this
-	 *         method is defined in.
-	 */
-	@Override
-	public String getPackageName() {
-		return getDeclaringClass().getPackageName();
-	}
-
-	/**
-	 * @return The id of this element without the package names for the name of
-	 *         the method and the parameter types.
-	 */
-	@Override
-	public String getShortName() {
-		String lReturn = getDeclaringClass().getShortName() + "." + getName() + "(";
-		StringTokenizer lParser = new StringTokenizer(getParameters(), ",()");
-		int lNbTokens = lParser.countTokens();
-		for (int i = 0; i < lNbTokens - 1; i++) {
-			String lToken = lParser.nextToken();
-			int lIndex = lToken.lastIndexOf('.');
-			if (lIndex >= 0) {
-				lReturn += lToken.substring(lIndex + 1, lToken.length()) + ",";
-			} else {
-				lReturn += lToken + ",";
-			}
-		}
-
-		if (lNbTokens > 0) {
-			String lToken = lParser.nextToken();
-			int lIndex = lToken.lastIndexOf('.');
-			if (lIndex >= 0) {
-				lReturn += lToken.substring(lIndex + 1, lToken.length());
-			} else {
-				lReturn += lToken;
-			}
-		}
-		return lReturn + ")";
+	public boolean isConstructor() {
+		return this.getId().contains(INIT_STRING);
 	}
 }

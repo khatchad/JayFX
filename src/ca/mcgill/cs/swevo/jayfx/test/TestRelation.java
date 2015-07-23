@@ -11,6 +11,7 @@
 package ca.mcgill.cs.swevo.jayfx.test;
 
 import ca.mcgill.cs.swevo.jayfx.model.Relation;
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 public class TestRelation extends TestCase {
@@ -20,26 +21,25 @@ public class TestRelation extends TestCase {
 
 	@Override
 	public void setUp() {
-		aDirectRelations = Relation.getAllRelations(true);
-		aIndirectRelations = Relation.getAllRelations(false);
+		this.aDirectRelations = Relation.getAllRelations(true);
+		this.aIndirectRelations = Relation.getAllRelations(false);
 	}
 
 	/**
 	 * Check if there are equal number of direct and indirection relations.
-	 *
+	 * 
 	 */
 	public void test1() {
-		assertEquals(aDirectRelations.length, aIndirectRelations.length);
+		Assert.assertEquals(this.aDirectRelations.length, this.aIndirectRelations.length);
 	}
 
 	/**
 	 * Check if the inverse of a direction relation is equal to its copy in the
 	 * indirection relation collections.
-	 *
+	 * 
 	 */
 	public void test2() {
-		for (int i = 0; i < aDirectRelations.length; i++) {
-			assertEquals(aDirectRelations[i].getInverseRelation(), aIndirectRelations[i]);
-		}
+		for (int i = 0; i < this.aDirectRelations.length; i++)
+			Assert.assertEquals(this.aDirectRelations[i].getInverseRelation(), this.aIndirectRelations[i]);
 	}
 }

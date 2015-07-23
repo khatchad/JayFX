@@ -16,6 +16,11 @@ package ca.mcgill.cs.swevo.jayfx;
  */
 public class ConversionException extends Exception {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8368932097709884552L;
+
+	/**
 	 * Constructor for ConversionException.
 	 */
 	public ConversionException() {
@@ -27,7 +32,7 @@ public class ConversionException extends Exception {
 	 * 
 	 * @param arg0
 	 */
-	public ConversionException(String arg0) {
+	public ConversionException(final String arg0) {
 		super(arg0);
 	}
 
@@ -37,7 +42,7 @@ public class ConversionException extends Exception {
 	 * @param arg0
 	 * @param arg1
 	 */
-	public ConversionException(String arg0, Throwable arg1) {
+	public ConversionException(final String arg0, final Throwable arg1) {
 		super(arg0, arg1);
 	}
 
@@ -46,7 +51,7 @@ public class ConversionException extends Exception {
 	 * 
 	 * @param arg0
 	 */
-	public ConversionException(Throwable arg0) {
+	public ConversionException(final Throwable arg0) {
 		super(arg0);
 	}
 }

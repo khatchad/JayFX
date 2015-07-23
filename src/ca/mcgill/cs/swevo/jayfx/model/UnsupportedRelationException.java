@@ -16,6 +16,11 @@ package ca.mcgill.cs.swevo.jayfx.model;
 
 public class UnsupportedRelationException extends Exception {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1234290563519744340L;
+
+	/**
 	 * Constructor for UnsupportedRelationException.
 	 */
 	public UnsupportedRelationException() {
@@ -27,7 +32,7 @@ public class UnsupportedRelationException extends Exception {
 	 * 
 	 * @param arg0
 	 */
-	public UnsupportedRelationException(String arg0) {
+	public UnsupportedRelationException(final String arg0) {
 		super(arg0);
 	}
 
@@ -37,7 +42,7 @@ public class UnsupportedRelationException extends Exception {
 	 * @param arg0
 	 * @param arg1
 	 */
-	public UnsupportedRelationException(String arg0, Throwable arg1) {
+	public UnsupportedRelationException(final String arg0, final Throwable arg1) {
 		super(arg0, arg1);
 	}
 
@@ -46,7 +51,7 @@ public class UnsupportedRelationException extends Exception {
 	 * 
 	 * @param arg0
 	 */
-	public UnsupportedRelationException(Throwable arg0) {
+	public UnsupportedRelationException(final Throwable arg0) {
 		super(arg0);
 	}
 }

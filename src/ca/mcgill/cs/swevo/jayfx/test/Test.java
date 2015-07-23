@@ -10,6 +10,7 @@
 
 package ca.mcgill.cs.swevo.jayfx.test;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -25,6 +27,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
+import ca.mcgill.cs.swevo.jayfx.ConversionException;
+import ca.mcgill.cs.swevo.jayfx.ElementNotFoundException;
 import ca.mcgill.cs.swevo.jayfx.JayFX;
 import ca.mcgill.cs.swevo.jayfx.JayFXException;
 import ca.mcgill.cs.swevo.jayfx.model.IElement;
@@ -75,7 +79,7 @@ public class Test implements IWorkbenchWindowActionDelegate {
 			IProgressMonitor lMonitor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
 					.getViewReferences()[0].getView(true).getViewSite().getActionBars().getStatusLineManager()
 							.getProgressMonitor();
-			lDB.initialize(getSelectedProject(), lMonitor, true);
+			lDB.initialize(Collections.singletonList(getSelectedProject()), lMonitor, true, null);
 			// lDB.dumpConverter();
 			// System.out.println("--- Calls ---");
 			Set lAllElements = lDB.getAllElements();
@@ -95,6 +99,15 @@ public class Test implements IWorkbenchWindowActionDelegate {
 			lException.printStackTrace();
 		} catch (AssertionError lError) {
 			lError.printStackTrace();
+		} catch (ElementNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ConversionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
