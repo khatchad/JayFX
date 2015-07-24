@@ -22,38 +22,61 @@ import org.jdom2.Element;
  */
 public enum Relation {
 
-	EXPLICITLY_CALLS(Type.ID_EXPLICITLY_CALLS, true), ANNOTATES(Type.ID_ANNOTATES, true), CONTAINS(Type.ID_CONTAINS,
-			true), CHECKS(Type.ID_CHECKS, true), CREATES(Type.ID_CREATES,
-					true), DECLARES_METHOD(Type.ID_DECLARES_METHOD, true), DECLARES_FIELD(Type.ID_DECLARES_FIELD,
-							true), DECLARES_TYPE(Type.ID_DECLARES_TYPE, true), EXTENDS_CLASS(Type.ID_EXTENDS_CLASS,
-									true), EXTENDS_INTERFACES(Type.ID_EXTENDS_INTERFACES, true), HAS_PARAMETER_TYPES(
-											Type.ID_HAS_PARAMETER_TYPES, true), HAS_RETURN_TYPE(Type.ID_HAS_RETURN_TYPE,
-													true), IMPLEMENTS_INTERFACE(Type.ID_IMPLEMENTS_INTERFACE,
-															true), OF_TYPE(Type.ID_OF_TYPE, true), TRANS_EXTENDS(
-																	Type.ID_TRANS_EXTENDS, true), TRANS_IMPLEMENTS(
-																			Type.ID_TRANS_IMPLEMENTS, true),
+	EXPLICITLY_CALLS(Type.ID_EXPLICITLY_CALLS, true),
+	ANNOTATES(Type.ID_ANNOTATES, true),
+	CONTAINS(Type.ID_CONTAINS, true),
+	CHECKS(Type.ID_CHECKS, true),
+	CREATES(Type.ID_CREATES, true),
+	DECLARES_METHOD(Type.ID_DECLARES_METHOD, true),
+	DECLARES_FIELD(Type.ID_DECLARES_FIELD, true),
+	DECLARES_TYPE(Type.ID_DECLARES_TYPE, true),
+	EXTENDS_CLASS(Type.ID_EXTENDS_CLASS, true),
+	EXTENDS_INTERFACES(Type.ID_EXTENDS_INTERFACES, true),
+	HAS_PARAMETER_TYPES(Type.ID_HAS_PARAMETER_TYPES, true),
+	HAS_RETURN_TYPE(Type.ID_HAS_RETURN_TYPE, true),
+	IMPLEMENTS_INTERFACE(Type.ID_IMPLEMENTS_INTERFACE, true),
+	OF_TYPE(Type.ID_OF_TYPE, true),
+	TRANS_EXTENDS(Type.ID_TRANS_EXTENDS, true),
+	TRANS_IMPLEMENTS(Type.ID_TRANS_IMPLEMENTS, true),
 
-	ACCESSES(Type.ID_ACCESSES, true), SETS(Type.ID_SETS, true), GETS(Type.ID_GETS, true), ADVISES(Type.ID_ADVISES,
-			true), CALLS(Type.ID_CALLS, true), IMPLEMENTS_METHOD(Type.ID_IMPLEMENTS_METHOD,
-					true), INHERITS(Type.ID_INHERITS, true), OVERRIDES(Type.ID_OVERRIDES,
-							true), OVERLOADS(Type.ID_OVERLOADS, true), USES(Type.ID_USES, true),
+	ACCESSES(Type.ID_ACCESSES, true),
+	SETS(Type.ID_SETS, true),
+	GETS(Type.ID_GETS, true),
+	ADVISES(Type.ID_ADVISES, true),
+	CALLS(Type.ID_CALLS, true),
+	IMPLEMENTS_METHOD(Type.ID_IMPLEMENTS_METHOD, true),
+	INHERITS(Type.ID_INHERITS, true),
+	OVERRIDES(Type.ID_OVERRIDES, true),
+	OVERLOADS(Type.ID_OVERLOADS, true),
+	USES(Type.ID_USES, true),
 
-	IDENTITY(Type.ID_IDENTITY, true), STATIC_CALLS(Type.ID_STATIC_CALLS, true), REFERENCES(Type.ID_REFERENCES, true),
+	IDENTITY(Type.ID_IDENTITY, true),
+	STATIC_CALLS(Type.ID_STATIC_CALLS, true),
+	REFERENCES(Type.ID_REFERENCES, true),
 
-	T_EXPLICITLY_CALLS(Type.ID_EXPLICITLY_CALLS, false), T_CHECKS(Type.ID_CHECKS, false), T_CREATES(Type.ID_CREATES,
-			false), T_DECLARES(Type.ID_DECLARES, false), T_EXTENDS_CLASS(Type.ID_EXTENDS_CLASS,
-					false), T_EXTENDS_INTERFACES(Type.ID_EXTENDS_INTERFACES, false), T_HAS_PARAMETER_TYPES(
-							Type.ID_HAS_PARAMETER_TYPES, false), T_HAS_RETURN_TYPE(Type.ID_HAS_RETURN_TYPE,
-									false), T_IMPLEMENTS_INTERFACE(Type.ID_IMPLEMENTS_INTERFACE, false), T_OF_TYPE(
-											Type.ID_OF_TYPE, false), T_TRANS_EXTENDS(Type.ID_TRANS_EXTENDS,
-													false), T_TRANS_IMPLEMENTS(Type.ID_TRANS_IMPLEMENTS, false),
+	T_EXPLICITLY_CALLS(Type.ID_EXPLICITLY_CALLS, false),
+	T_CHECKS(Type.ID_CHECKS, false),
+	T_CREATES(Type.ID_CREATES, false),
+	T_DECLARES(Type.ID_DECLARES, false),
+	T_EXTENDS_CLASS(Type.ID_EXTENDS_CLASS, false),
+	T_EXTENDS_INTERFACES(Type.ID_EXTENDS_INTERFACES, false),
+	T_HAS_PARAMETER_TYPES(Type.ID_HAS_PARAMETER_TYPES, false),
+	T_HAS_RETURN_TYPE(Type.ID_HAS_RETURN_TYPE, false),
+	T_IMPLEMENTS_INTERFACE(Type.ID_IMPLEMENTS_INTERFACE, false),
+	T_OF_TYPE(Type.ID_OF_TYPE, false),
+	T_TRANS_EXTENDS(Type.ID_TRANS_EXTENDS, false),
+	T_TRANS_IMPLEMENTS(Type.ID_TRANS_IMPLEMENTS, false),
 
-	T_ACCESSES(Type.ID_ACCESSES, false), T_CALLS(Type.ID_CALLS, false), T_IMPLEMENTS_METHOD(Type.ID_IMPLEMENTS_METHOD,
-			false), T_INHERITS(Type.ID_INHERITS, false), T_OVERRIDES(Type.ID_OVERRIDES, false), T_USES(Type.ID_USES,
-					false),
+	T_ACCESSES(Type.ID_ACCESSES, false),
+	T_CALLS(Type.ID_CALLS, false),
+	T_IMPLEMENTS_METHOD(Type.ID_IMPLEMENTS_METHOD, false),
+	T_INHERITS(Type.ID_INHERITS, false),
+	T_OVERRIDES(Type.ID_OVERRIDES, false),
+	T_USES(Type.ID_USES, false),
 
-	T_IDENTITY(Type.ID_IDENTITY, false), T_STATIC_CALLS(Type.ID_STATIC_CALLS, false), T_REFERENCES(Type.ID_REFERENCES,
-			false);
+	T_IDENTITY(Type.ID_IDENTITY, false),
+	T_STATIC_CALLS(Type.ID_STATIC_CALLS, false),
+	T_REFERENCES(Type.ID_REFERENCES, false);
 
 	/**
 	 * 
@@ -72,69 +95,47 @@ public enum Relation {
 		/*
 		 * Primitive: 0-9
 		 */
-		ID_EXPLICITLY_CALLS("explicitly_calls", "e-calling", "e-called by",
-				"a method calls a method explicitly"), ID_ANNOTATES("annotates", "annotating", "annotated by",
-						"an annotation annotates something"), ID_CONTAINS("contains", "contains", "contains",
-								"a package contains a type"), ID_CHECKS("checks", "checking", "checked by",
-										"a method checks the run_time type of an object for a specific type"), ID_CREATES(
-												"creates", "creating", "created by",
-												"a method creates an object of a type"), ID_DECLARES("declares",
-														"declaring", "declared by",
-														"a class declares a member"), ID_DECLARES_FIELD(
-																"declares_field", "declaring field",
-																"field declared by",
-																"a class declares a field"), ID_DECLARES_METHOD(
-																		"declares_method", "declaring method",
-																		"method declared by",
-																		"a class declares a method"), ID_DECLARES_TYPE(
-																				"declares_type", "declaring type",
-																				"type declared by",
-																				"a class declares a type"), ID_EXTENDS_CLASS(
-																						"extends_class", "extending",
-																						"extended by",
-																						"a class directly extends a class"), ID_EXTENDS_INTERFACES(
-																								"extends_interface",
-																								"i-extending",
-																								"i-extended by",
-																								"an interface directly extends an interface"), ID_HAS_PARAMETER_TYPES(
-																										"as-parameter-types",
-																										"having p-types",
-																										"p-type of",
-																										"a method has parameters of types"), ID_HAS_RETURN_TYPE(
-																												"has-return-type",
-																												"having r-type",
-																												"r-type of",
-																												"a method has return type"), ID_IMPLEMENTS_INTERFACE(
-																														"implements_interface",
-																														"implementing",
-																														"implemented by",
-																														"a class directly implements an interface"), ID_OF_TYPE(
-																																"of-type",
-																																"being of type",
-																																"type of",
-																																"a field is of type"),
+		ID_EXPLICITLY_CALLS("explicitly_calls", "e-calling", "e-called by", "a method calls a method explicitly"),
+		ID_ANNOTATES("annotates", "annotating", "annotated by", "an annotation annotates something"),
+		ID_CONTAINS("contains", "contains", "contains", "a package contains a type"),
+		ID_CHECKS("checks", "checking", "checked by",
+				"a method checks the run_time type of an object for a specific type"),
+		ID_CREATES("creates", "creating", "created by", "a method creates an object of a type"),
+		ID_DECLARES("declares", "declaring", "declared by", "a class declares a member"),
+		ID_DECLARES_FIELD("declares_field", "declaring field", "field declared by", "a class declares a field"),
+		ID_DECLARES_METHOD("declares_method", "declaring method", "method declared by", "a class declares a method"),
+		ID_DECLARES_TYPE("declares_type", "declaring type", "type declared by", "a class declares a type"),
+		ID_EXTENDS_CLASS("extends_class", "extending", "extended by", "a class directly extends a class"),
+		ID_EXTENDS_INTERFACES("extends_interface", "i-extending", "i-extended by",
+				"an interface directly extends an interface"),
+		ID_HAS_PARAMETER_TYPES("as-parameter-types", "having p-types", "p-type of", "a method has parameters of types"),
+		ID_HAS_RETURN_TYPE("has-return-type", "having r-type", "r-type of", "a method has return type"),
+		ID_IMPLEMENTS_INTERFACE("implements_interface", "implementing", "implemented by",
+				"a class directly implements an interface"),
+		ID_OF_TYPE("of-type", "being of type", "type of", "a field is of type"),
 
 		ID_TRANS_EXTENDS("transitively_extends", "transitively extending", "transitively extended by",
-				"a class transitively extends a class"), ID_TRANS_IMPLEMENTS("transitively_implements",
-						"transitively implementing", "transitively implemented by",
-						"a class transitively implements an interface"),
+				"a class transitively extends a class"),
+		ID_TRANS_IMPLEMENTS("transitively_implements", "transitively implementing", "transitively implemented by",
+				"a class transitively implements an interface"),
 
-		ID_ACCESSES("accesses_field", "accessing", "accessed by",
-				"a method accesses a field, either to read or write"), ID_SETS("sets_field", "setting", "set by",
-						"a method sets a field"), ID_GETS("gets_field", "getting", "got by", "a method gets a field"),
+		ID_ACCESSES("accesses_field", "accessing", "accessed by", "a method accesses a field, either to read or write"),
+		ID_SETS("sets_field", "setting", "set by", "a method sets a field"),
+		ID_GETS("gets_field", "getting", "got by", "a method gets a field"),
 
-		ID_ADVISES("advises", "advising", "advised by", "an advise advises something"), ID_CALLS("calls", "calling",
-				"called by", "a method calls a method"), ID_IMPLEMENTS_METHOD("implements_method", "m-implementing",
-						"m-implemented by", "a method implements an interface method"), ID_INHERITS("inherits",
-								"inheriting", "inherited by", "a class inherits fields and methods"), ID_OVERRIDES(
-										"overrides", "overriding", "overridden by",
-										"a method overrides a method"), ID_OVERLOADS("overloads", "overloading",
-												"overloaded by", "a method overloads a method"), ID_USES("uses",
-														"using", "used by", "a method uses a program element"),
+		ID_ADVISES("advises", "advising", "advised by", "an advise advises something"),
+		ID_CALLS("calls", "calling", "called by", "a method calls a method"),
+		ID_IMPLEMENTS_METHOD("implements_method", "m-implementing", "m-implemented by",
+				"a method implements an interface method"),
+		ID_INHERITS("inherits", "inheriting", "inherited by", "a class inherits fields and methods"),
+		ID_OVERRIDES("overrides", "overriding", "overridden by", "a method overrides a method"),
+		ID_OVERLOADS("overloads", "overloading", "overloaded by", "a method overloads a method"),
+		ID_USES("uses", "using", "used by", "a method uses a program element"),
 
-		ID_IDENTITY("identity", "is", "is", "an element is itself"), ID_STATIC_CALLS("statically_calls",
-				"statically calls", "statically called by", "a method statically calls another method"), ID_REFERENCES(
-						"references", "references", "referenced by", "a class/method references a class/method/field"),
+		ID_IDENTITY("identity", "is", "is", "an element is itself"),
+		ID_STATIC_CALLS("statically_calls", "statically calls", "statically called by",
+				"a method statically calls another method"),
+		ID_REFERENCES("references", "references", "referenced by", "a class/method references a class/method/field"),
 
 		ID_ERROR("error", "error", "error", "error");
 
