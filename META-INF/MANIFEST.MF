@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JayFX Plug-in
-Bundle-SymbolicName: ca.mcgill.cs.swevo.jayfx;singleton:=true
-Bundle-Version: 0.0.3
+Bundle-SymbolicName: ca.mcgill.cs.swevo.jayfx
+Bundle-Version: 0.0.4
 Bundle-Vendor: McGill University
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
@@ -11,8 +11,8 @@ Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.core.runtime,
  org.eclipse.ui,
  org.junit
-Export-Package: ca.mcgill.cs.swevo.jayfx,
- ca.mcgill.cs.swevo.jayfx.model,
+Export-Package: ca.mcgill.cs.swevo.jayfx;
+   ca.mcgill.cs.swevo.jayfx.model,
  ca.mcgill.cs.swevo.jayfx.test,
  ca.mcgill.cs.swevo.jayfx.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
