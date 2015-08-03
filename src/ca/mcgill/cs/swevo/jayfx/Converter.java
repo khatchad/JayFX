@@ -27,7 +27,7 @@ import ca.mcgill.cs.swevo.jayfx.model.MethodElement;
 /**
  * Provides support for converting JCore objects to Concern Graph model objects.
  */
-class Converter {
+public class Converter {
 	private static final char DOT_CHAR = '.';
 	private static final String DOT = ".";
 	private static final String COMMA = ",";
