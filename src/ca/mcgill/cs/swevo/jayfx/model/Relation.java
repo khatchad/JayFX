@@ -42,7 +42,6 @@ public enum Relation {
 	ACCESSES(Type.ID_ACCESSES, true),
 	SETS(Type.ID_SETS, true),
 	GETS(Type.ID_GETS, true),
-	ADVISES(Type.ID_ADVISES, true),
 	CALLS(Type.ID_CALLS, true),
 	IMPLEMENTS_METHOD(Type.ID_IMPLEMENTS_METHOD, true),
 	INHERITS(Type.ID_INHERITS, true),
@@ -123,7 +122,6 @@ public enum Relation {
 		ID_SETS("sets_field", "setting", "set by", "a method sets a field"),
 		ID_GETS("gets_field", "getting", "got by", "a method gets a field"),
 
-		ID_ADVISES("advises", "advising", "advised by", "an advise advises something"),
 		ID_CALLS("calls", "calling", "called by", "a method calls a method"),
 		ID_IMPLEMENTS_METHOD("implements_method", "m-implementing", "m-implemented by",
 				"a method implements an interface method"),
@@ -440,21 +438,5 @@ public enum Relation {
 		Attribute typeAttribute = elem.getAttribute(TYPE);
 		String typeString = typeAttribute.getValue();
 		return valueOf(typeString);
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean isAdvisable() {
-		switch (this) {
-		case CALLS:
-		case EXPLICITLY_CALLS:
-		case GETS:
-		case SETS:
-		case STATIC_CALLS:
-			return true;
-		default:
-			return false;
-		}
 	}
 }

@@ -49,7 +49,7 @@ public class Analyzer {
 				|| pRelation == Relation.EXTENDS_CLASS || pRelation == Relation.T_EXTENDS_CLASS
 				|| pRelation == Relation.EXTENDS_INTERFACES || pRelation == Relation.T_EXTENDS_INTERFACES
 				|| pRelation == Relation.OVERRIDES || pRelation == Relation.T_OVERRIDES
-				|| pRelation == Relation.OVERLOADS || pRelation == Relation.ANNOTATES || pRelation == Relation.ADVISES
+				|| pRelation == Relation.OVERLOADS || pRelation == Relation.ANNOTATES 
 				|| pRelation == Relation.IMPLEMENTS_INTERFACE || pRelation == Relation.T_IMPLEMENTS_INTERFACE
 				|| pRelation == Relation.CONTAINS || pRelation == Relation.IMPLEMENTS_METHOD)
 			lReturn.addAll(this.aDB.getRange(pElement, pRelation));
