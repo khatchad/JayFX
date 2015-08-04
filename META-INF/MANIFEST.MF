@@ -16,3 +16,4 @@ Export-Package: ca.mcgill.cs.swevo.jayfx;
  ca.mcgill.cs.swevo.jayfx.test,
  ca.mcgill.cs.swevo.jayfx.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.jdom2
