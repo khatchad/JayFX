@@ -308,6 +308,8 @@ public class JayFX {
 				if (lPDs.length > 0)
 					this.aPackages.add(lPDs[0].getElementName());
 			} catch (final JavaModelException lException) {
+				if (pProgress != null)
+					pProgress.done();
 				throw new JayFXException(lException);
 			}
 
