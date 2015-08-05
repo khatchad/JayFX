@@ -37,6 +37,7 @@ import ca.mcgill.cs.swevo.jayfx.model.FlyweightElementFactory;
 import ca.mcgill.cs.swevo.jayfx.model.IElement;
 import ca.mcgill.cs.swevo.jayfx.model.MethodElement;
 import ca.mcgill.cs.swevo.jayfx.model.Relation;
+import ca.mcgill.cs.swevo.jayfx.util.LogUtil;
 import ca.mcgill.cs.swevo.jayfx.util.TimeCollector;
 
 /**
@@ -309,7 +310,13 @@ public class JayFX {
 			} catch (final JavaModelException lException) {
 				throw new JayFXException(lException);
 			}
+
+			// try to analyze the compilation unit.
+			try {
 			lAnalyzer.analyze(lCU, timeCollector);
+			} catch (Exception e) {
+				LogUtil.logError("Failed to analyze compilation unit: " + lCU.getElementName() + ". Skipping ...", e);
+			}
 			if (pProgress != null)
 				pProgress.worked(1);
 		}
