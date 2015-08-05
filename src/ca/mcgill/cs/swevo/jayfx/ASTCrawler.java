@@ -14,10 +14,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
@@ -27,6 +29,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
+import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.CastExpression;
@@ -61,6 +64,7 @@ import org.eclipse.jdt.core.dom.SuperFieldAccess;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import ca.mcgill.cs.swevo.jayfx.model.Category;
 import ca.mcgill.cs.swevo.jayfx.model.ClassElement;
@@ -68,6 +72,7 @@ import ca.mcgill.cs.swevo.jayfx.model.FlyweightElementFactory;
 import ca.mcgill.cs.swevo.jayfx.model.IElement;
 import ca.mcgill.cs.swevo.jayfx.model.MethodElement;
 import ca.mcgill.cs.swevo.jayfx.model.Relation;
+import ca.mcgill.cs.swevo.jayfx.util.LogUtil;
 import ca.mcgill.cs.swevo.jayfx.util.TimeCollector;
 
 /**
@@ -131,20 +136,6 @@ public class ASTCrawler extends ASTVisitor {
 															// initializer block
 
 	/**
-	 * Encapsulates behavior to report null objects.
-	 * 
-	 * @param pObject
-	 *            Object to check.
-	 */
-	private static boolean checkForNull(final Object pObject) {
-		boolean lReturn = false;
-		if (pObject == null)
-			// Thread.dumpStack();
-			lReturn = true;
-		return lReturn;
-	}
-
-	/**
 	 * Converts a method binding to a method element.
 	 * 
 	 * @param pBinding
@@ -152,7 +143,7 @@ public class ASTCrawler extends ASTVisitor {
 	 * @return A method element corresponding to pBinding. Never null.
 	 */
 	private static IElement convertBinding(final IMethodBinding pBinding) {
-		ASTCrawler.checkForNull(pBinding);
+		assertMethodBindingIsNotNull(pBinding);
 		String lReturn = null;
 		try {
 			lReturn = ASTCrawler.convertBinding(pBinding.getDeclaringClass()).getId() + ".";
@@ -177,6 +168,10 @@ public class ASTCrawler extends ASTVisitor {
 		return FlyweightElementFactory.getElement(Category.METHOD, lReturn);
 	}
 
+	private static void assertMethodBindingIsNotNull(IMethodBinding pBinding) {
+		assertIsNotNull(pBinding, IMethodBinding.class);
+	}
+
 	/**
 	 * Converts a type binding to a class element or an enum element.
 	 * 
@@ -186,10 +181,9 @@ public class ASTCrawler extends ASTVisitor {
 	 *         null.
 	 */
 	private static IElement convertBinding(final ITypeBinding pBinding) {
-		ASTCrawler.checkForNull(pBinding);
-		IJavaElement elem = null;
+		assertIsNotNull(pBinding);
 		try {
-			elem = pBinding.getJavaElement();
+			pBinding.getJavaElement();
 		} catch (final NullPointerException E) {
 			System.out.println("Bug in eclipse encountered for: " + pBinding.getName());
 			return null;
@@ -209,6 +203,17 @@ public class ASTCrawler extends ASTVisitor {
 		final String lFieldID = ASTCrawler.convertBinding(pBinding.getDeclaringClass()).getId() + "."
 				+ pBinding.getName();
 		return FlyweightElementFactory.getElement(Category.FIELD, lFieldID);
+
+	private static void assertIsNotNull(final IVariableBinding pBinding) {
+		assertIsNotNull(pBinding, IVariableBinding.class);
+	}
+
+	private static void assertIsNotNull(final ITypeBinding pBinding) {
+		assertIsNotNull(pBinding, ITypeBinding.class);
+	}
+
+	private static void assertIsNotNull(final Object obj, Class<?> classBeingChecked) {
+		Assert.isNotNull(obj, classBeingChecked.getTypeName() + " is null.");
 	}
 
 	/**
@@ -222,7 +227,7 @@ public class ASTCrawler extends ASTVisitor {
 	 * @return A class element representing this binding. Cannot be null.
 	 */
 	private static IElement convertParameterTypeBinding(final ITypeBinding pBinding) {
-		ASTCrawler.checkForNull(pBinding);
+		assertIsNotNull(pBinding);
 		if (pBinding.getDimensions() == 0 && !pBinding.isPrimitive())
 			return FlyweightElementFactory.getElement(Category.CLASS,
 					Signature.C_RESOLVED + pBinding.getBinaryName() + Signature.C_SEMICOLON);
@@ -239,13 +244,6 @@ public class ASTCrawler extends ASTVisitor {
 
 		else
 			return ASTCrawler.getAssignment(node.getParent());
-	}
-
-	/**
-	 * Standard logging behavior
-	 */
-	private static void log(final String pMessage) {
-		System.out.println(pMessage);
 	}
 
 	private ClassElement aCurrType;
@@ -293,7 +291,9 @@ public class ASTCrawler extends ASTVisitor {
 	 * @param pCU
 	 */
 	public void analyze(final ICompilationUnit pCU, TimeCollector timeCollector) {
+		if (timeCollector != null)
 		timeCollector.start();
+
 		this.resetSpider();
 
 		this.extractTypes(pCU);
@@ -304,6 +304,8 @@ public class ASTCrawler extends ASTVisitor {
 		lParser.setResolveBindings(true);
 		final CompilationUnit lResult = (CompilationUnit) lParser.createAST(null);
 		lResult.accept(this);
+
+		if (timeCollector != null)
 		timeCollector.stop();
 	}
 
@@ -375,6 +377,14 @@ public class ASTCrawler extends ASTVisitor {
 			this.aDB.addRelationAndTranspose(this.aCurrType, Relation.IMPLEMENTS_INTERFACE, lInterface);
 		}
 		return true;
+	}
+
+	private static boolean checkForNull(Object obj) {
+		if (obj == null) {
+			LogUtil.logWarning("Encountered null element.");
+			return true;
+		} else
+			return false;
 	}
 
 	@Override
@@ -514,7 +524,7 @@ public class ASTCrawler extends ASTVisitor {
 		final IVariableBinding lBinding = (IVariableBinding) pNode.getName().resolveBinding();
 
 		if (lBinding == null) {
-			ASTCrawler.log("Null binding 1 for " + pNode.toString());
+			LogUtil.log("Null binding 1 for " + pNode.toString());
 			return false;
 		}
 
@@ -841,7 +851,7 @@ public class ASTCrawler extends ASTVisitor {
 		final IBinding lBinding = pNode.resolveBinding();
 
 		if (lBinding == null) {
-			ASTCrawler.log("Null binding 3 for " + pNode);
+			LogUtil.log("Null binding 3 for " + pNode);
 			return false;
 		}
 
@@ -900,7 +910,6 @@ public class ASTCrawler extends ASTVisitor {
 			final MethodDeclaration annotatedMethod = (MethodDeclaration) annotatedNode;
 			final IMethodBinding mBinding = annotatedMethod.resolveBinding();
 			return this.addAnnotationRelation(annoteElem, mBinding);
-
 		}
 		case ASTNode.ANNOTATION_TYPE_DECLARATION: {
 			final AnnotationTypeDeclaration annotatedAnnotation = (AnnotationTypeDeclaration) annotatedNode;
@@ -965,7 +974,7 @@ public class ASTCrawler extends ASTVisitor {
 		final IVariableBinding lBinding = (IVariableBinding) pNode.getName().resolveBinding();
 
 		if (lBinding == null) {
-			ASTCrawler.log("Null binding 2 for" + pNode);
+			LogUtil.log("Null binding 2 for" + pNode);
 			return false;
 		}
 		this.addAccessRelation(lBinding);
@@ -1180,8 +1189,12 @@ public class ASTCrawler extends ASTVisitor {
 	 * @return
 	 */
 	private IElement convertBinding(final IPackageBinding binding) {
-		ASTCrawler.checkForNull(binding);
+		assertIsNotNull(binding);
 		return FlyweightElementFactory.getElement(Category.PACKAGE, binding.getName());
+	}
+
+	private void assertIsNotNull(IPackageBinding binding) {
+		assertIsNotNull(binding, IPackageBinding.class);
 	}
 
 	// Extracts types and loads them into the converter
